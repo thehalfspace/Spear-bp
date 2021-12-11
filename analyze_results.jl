@@ -41,7 +41,7 @@ fltst100 = readdlm(string(out_path, "fltst_dp100.out"), header=false)
 # temp read data
 slip = readdlm(string(out_path, "slip.out"), header=false)
 sliprate = readdlm(string(out_path, "sliprate.out"), header=false)
-stress = readdlm(string(out_path, "stress.out"), header=false)
+stress2 = readdlm(string(out_path, "stress.out"), header=false)
 # state = readdlm(string(out_path, "state.out"), header=false)
 time_ = readdlm(string(out_path, "time_adaptive.out"), header=false)
 
