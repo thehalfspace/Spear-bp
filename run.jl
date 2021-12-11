@@ -16,10 +16,10 @@ using Base.Threads
 include("$(@__DIR__)/par.jl")	    #	Set Parameters
 
 # Put the resolution for the simulation here: should be an integer
-resolution = 20
+resolution = 5
 
 # Output directory to save data
-out_dir = "$(@__DIR__)/data/seas_bp1_fd_upload_02/"
+out_dir = "$(@__DIR__)/data/seas_bp1_fd_upload_160km/"
 mkpath(out_dir)
 
 @info("Setting Parameters")
@@ -32,6 +32,7 @@ include("$(@__DIR__)/src/otherFunctions.jl")
 include("$(@__DIR__)/src/main.jl")
 
 @info("Beginning Simulation")
+#  outseis, iflt = main(P)
 simulation_time = @elapsed @time main(P)
 
 println("\n")

@@ -15,8 +15,8 @@ include("$(@__DIR__)/src/damageEvol.jl")   #    Stiffness index of damaged mediu
 
 function setParameters(FZdepth, res)
 
-    LX::Int = 80e3  # depth dimension of rectangular domain
-    LY::Int = 80e3 # off fault dimenstion of rectangular domain
+    LX::Int = 160e3  # depth dimension of rectangular domain
+    LY::Int = 160e3 # off fault dimenstion of rectangular domain
 
     NelX::Int = 40*res # no. of elements in x
     NelY::Int = 40*res # no. of elements in y
@@ -45,8 +45,8 @@ function setParameters(FZdepth, res)
 
     yr2sec::Int = 365*24*60*60
 
-    Total_time::Int = 1500*yr2sec     # Set the total time for simulation here
-    #  Total_time::Int = 900*yr2sec     # Set the total time for simulation here
+    Total_time::Int = 200*yr2sec     # Set the total time for simulation here
+    # Total_time::Int = 1*yr2sec     # Set the total time for simulation here
 
     CFL::Float64 = 0.6	#	Courant stability number
 

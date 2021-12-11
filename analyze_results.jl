@@ -4,10 +4,10 @@ include("$(@__DIR__)/post/event_details.jl")
 include("$(@__DIR__)/post/plotting_script.jl")
 
 # path to save files
-global path = "$(@__DIR__)/plots/seas_bp1_fd_upload_01/"
+global path = "$(@__DIR__)/plots/seas_bp1_fd_upload_160km/"
 mkpath(path)
 
-global out_path = "$(@__DIR__)/data/seas_bp1_fd_upload_01/"
+global out_path = "$(@__DIR__)/data/seas_bp1_fd_upload_160km/"
 
 # Global variables
 yr2sec = 365*24*60*60
@@ -35,12 +35,15 @@ sliprate = fltst000[:,3]
 stress = fltst000[:,4]
 state = fltst000[:,5]
 
+fltst025 = readdlm(string(out_path, "fltst_dp025.out"), header=false)
+fltst100 = readdlm(string(out_path, "fltst_dp100.out"), header=false)
+
 # temp read data
-#  slip = readdlm(string(out_path, "slip.out"), header=false)
-#  sliprate = readdlm(string(out_path, "sliprate.out"), header=false)
-#  stress = readdlm(string(out_path, "stress.out"), header=false)
-#  state = readdlm(string(out_path, "state.out"), header=false)
-#  time_ = readdlm(string(out_path, "time_adaptive.out"), header=false)
+slip = readdlm(string(out_path, "slip.out"), header=false)
+sliprate = readdlm(string(out_path, "sliprate.out"), header=false)
+stress = readdlm(string(out_path, "stress.out"), header=false)
+# state = readdlm(string(out_path, "state.out"), header=false)
+time_ = readdlm(string(out_path, "time_adaptive.out"), header=false)
 
 
 # Comparison data
@@ -52,19 +55,25 @@ comp_sliprate = comp_scec[:,3]
 # Order of storage: Seff, tauo, FltX, cca, ccb, xLf
 params = readdlm(string(out_path, "params.out"), header=false)
 
-Seff = params[1,:]
-tauo = params[2,:]
+#  Seff = params[1,:]
+#  tauo = params[2,:]
 FltX = params[3,:]
-cca = params[4,:]
-ccb = params[5,:]
-Vo = 1.0e-6
-fo = 0.6
-Lc = params[6,:];
+#  cca = params[4,:]
+#  ccb = params[5,:]
+#  Vo = 1.0e-6
+#  fo = 0.6
+#  Lc = params[6,:];
 
 # testing state variable
 # state2 = log(Lc[1]/Vo) .+ (state .- fo)./ccb[1]
 #  state3 = log10.((Lc[1]/Vo).*exp.(state))
 #  t_adap = readdlm(string(out_path, "time_adaptive.out"), header=false)
+
+# psi = log.((Vo/Lc[1]).*10 .^(state))
+# theta_temp = (psi.*(1 + Seff[1]*ccb[1]) .+ Seff[1]*cca[1]*log(2) .- tauo[1])./(Seff[1]*ccb[1])
+
+# theta = (Lc[1]/Vo).* exp.(theta_temp)
+
 
 # Save as .mat file
 #  v = readdlm(string(out_path, "sliprate.out"), header=false)

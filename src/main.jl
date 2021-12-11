@@ -86,10 +86,10 @@ function main(P)
 
 
     # Save output variables at certain timesteps: define those timesteps
-    tvsx::Float64 = 0.1*P[1].yr2sec  # 2 years for interseismic period
+    tvsx::Float64 = 1*P[1].yr2sec  # 2 years for interseismic period
     tvsxinc::Float64 = tvsx
 
-    tevneinc::Float64 = 0.01    # 0.5 second for seismic period
+    tevneinc::Float64 = 0.5    # 0.5 second for seismic period
     delfref = zeros(P[1].FltNglob)
 
     # Iterators
@@ -152,14 +152,16 @@ function main(P)
     for i in 1:nseis
         outseis[i] = findall(-P[3].FltX./1e3 .>= sta_loc[i])[end]
     end
+     
+    # return outseis, P[4].iFlt
 
     # Open files to begin writing
-    open(string(out_dir,"stress.out"), "w") do stress
-    open(string(out_dir,"sliprate.out"), "w") do sliprate
-    open(string(out_dir,"slip.out"), "w") do slip
-    open(string(out_dir,"state.out"), "w") do state
-    open(string(out_dir,"time_adaptive.out"), "w") do time_adaptive
-    open(string(out_dir,"max_slip_rate.out"), "w") do max_slip_rate
+    open(string(out_dir,"stress.out"), "a") do stress
+    open(string(out_dir,"sliprate.out"), "a") do sliprate
+    open(string(out_dir,"slip.out"), "a") do slip
+    open(string(out_dir,"state.out"), "a") do state
+    open(string(out_dir,"time_adaptive.out"), "a") do time_adaptive
+    open(string(out_dir,"max_slip_rate.out"), "a") do max_slip_rate
     #open(string(out_dir,"delfsec.out"), "w") do dfsec
     #open(string(out_dir,"delfyr.out"), "w") do dfyr
     #open(string(out_dir,"event_time.out"), "w") do event_time
@@ -168,18 +170,18 @@ function main(P)
     #open(string(out_dir,"time_velocity.out"), "w") do Vf_time
 
     # Open files for scec format writing
-    open(string(out_dir,"fltst_dp000.out"), "w") do fltst000
-    open(string(out_dir,"fltst_dp025.out"), "w") do fltst025
-    open(string(out_dir,"fltst_dp050.out"), "w") do fltst050
-    open(string(out_dir,"fltst_dp075.out"), "w") do fltst075
-    open(string(out_dir,"fltst_dp100.out"), "w") do fltst100
-    open(string(out_dir,"fltst_dp125.out"), "w") do fltst125
-    open(string(out_dir,"fltst_dp150.out"), "w") do fltst150
-    open(string(out_dir,"fltst_dp175.out"), "w") do fltst175
-    open(string(out_dir,"fltst_dp200.out"), "w") do fltst200
-    open(string(out_dir,"fltst_dp250.out"), "w") do fltst250
-    open(string(out_dir,"fltst_dp300.out"), "w") do fltst300
-    open(string(out_dir,"fltst_dp350.out"), "w") do fltst350
+    open(string(out_dir,"fltst_dp000.out"), "a") do fltst000
+    open(string(out_dir,"fltst_dp025.out"), "a") do fltst025
+    open(string(out_dir,"fltst_dp050.out"), "a") do fltst050
+    open(string(out_dir,"fltst_dp075.out"), "a") do fltst075
+    open(string(out_dir,"fltst_dp100.out"), "a") do fltst100
+    open(string(out_dir,"fltst_dp125.out"), "a") do fltst125
+    open(string(out_dir,"fltst_dp150.out"), "a") do fltst150
+    open(string(out_dir,"fltst_dp175.out"), "a") do fltst175
+    open(string(out_dir,"fltst_dp200.out"), "a") do fltst200
+    open(string(out_dir,"fltst_dp250.out"), "a") do fltst250
+    open(string(out_dir,"fltst_dp300.out"), "a") do fltst300
+    open(string(out_dir,"fltst_dp350.out"), "a") do fltst350
     
 
     #....................
@@ -365,12 +367,10 @@ function main(P)
             #write(dfyr, join(2*d[P[4].iFlt] .+ P[2].Vpl*t, " "), "\n")
             
             # Write stress and slip
-            write(slip, join(2*d[P[4].iFlt] .+ P[2].Vpl*t, " "), "\n")
-            #  write(sliprate, join(2*v[P[4].iFlt] .+ P[2].Vpl, " "), "\n")
-            write(stress, join((tau + P[3].tauo)./1e6, " "), "\n")
-            #  write(state, join(psi, " "), "\n")
-            write(time_adaptive, join(t, " "), "\n")
-            write(max_slip_rate, join(Vfmax, " "), "\n")
+            writedlm(slip, 2*d[P[4].iFlt] .+ P[2].Vpl*t)
+            writedlm(stress, (tau + P[3].tauo)./1e6)
+            writedlm(time_adaptive, t)
+            writedlm(max_slip_rate, Vfmax)
 
 
             tvsx = tvsx + tvsxinc
@@ -385,12 +385,10 @@ function main(P)
                 tevne = tevneinc
 
                 # Write stress and slip
-                write(slip, join(2*d[P[4].iFlt] .+ P[2].Vpl*t, " "), "\n")
-                #  write(sliprate, join(2*v[P[4].iFlt] .+ P[2].Vpl, " "), "\n")
-                write(stress, join((tau + P[3].tauo)./1e6, " "), "\n")
-                #  write(state, join(psi, " "), "\n")
-                write(time_adaptive, join(t, " "), "\n")
-                write(max_slip_rate, join(Vfmax, " "), "\n")
+                writedlm(slip, 2*d[P[4].iFlt] .+ P[2].Vpl*t)
+                writedlm(stress, (tau + P[3].tauo)./1e6)
+                writedlm(time_adaptive, t)
+                writedlm(max_slip_rate, Vfmax)
             end
 
             if idelevne == 1 && (t - tevneb) > tevne
@@ -398,12 +396,12 @@ function main(P)
                 idd += 1
 
                 # Write stress and slip
-                write(slip, join(2*d[P[4].iFlt] .+ P[2].Vpl*t, " "), "\n")
-                #  write(sliprate, join(2*v[P[4].iFlt] .+ P[2].Vpl, " "), "\n")
-                write(stress, join((tau + P[3].tauo)./1e6, " "), "\n")
+                writedlm(slip, 2*d[P[4].iFlt] .+ P[2].Vpl*t)
+                writedlm(stress, (tau + P[3].tauo)./1e6)
+                writedlm(time_adaptive, t)
+                writedlm(max_slip_rate, Vfmax)
                 #  write(state, join(psi, " "), "\n")
-                write(time_adaptive, join(t, " "), "\n")
-                write(max_slip_rate, join(Vfmax, " "), "\n")
+                #  write(sliprate, join(2*v[P[4].iFlt] .+ P[2].Vpl, " "), "\n")
                 #write(dfsec, join(2*d[P[4].iFlt] .+ P[2].Vpl*t, " "), "\n")
                 tevne = tevne + tevneinc
             end
@@ -430,54 +428,85 @@ function main(P)
         end
 
         # Write SCEC output
-        # println(2*v[P4.iFlt][outseis[1]] .+ P[2].Vpl)
-        write(fltst000, join(hcat(t, " ", 2*d[P4.iFlt][outseis[1]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[1]] .+ P[2].Vpl, " ",
-                            (tau[outseis[1]] + P[3].tauo[outseis[1]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[1]]))), " "), "\n")
-        
-        write(fltst025, join(hcat(t, " ", 2*d[P4.iFlt][outseis[2]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[2]] .+ P[2].Vpl, " ",
-                            (tau[outseis[2]] + P[3].tauo[outseis[2]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[2]]))), " "), "\n")
+        # println(log10.( (P3.xLf[1]/P3.Vo)*exp.(psi[outseis[1]]) ))
+        #  println(hcat(t, 2*d[P4.iFlt][outseis[1]] + P[2].Vpl*t, psi[outseis[1]]))
+        #  println("space")
+        #  println(hcat(t, 2*d[P4.iFlt][outseis[2]] + P[2].Vpl*t), psi[outseis[2]])
+        writedlm(fltst000, hcat(t, 
+                           2*d[P4.iFlt][outseis[1]] + P[2].Vpl*t, 
+                           2*v[P4.iFlt][outseis[1]] + P[2].Vpl,
+                           (tau[outseis[1]] + P[3].tauo[outseis[1]])/1e6, 
+                           psi[outseis[1]]) ) 
 
-        write(fltst050, join(hcat(t, " ", 2*d[P4.iFlt][outseis[3]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[3]] .+ P[2].Vpl, " ",
-                            (tau[outseis[3]] + P[3].tauo[outseis[3]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[3]]))), " "), "\n")
-        
-        write(fltst075, join(hcat(t, " ", 2*d[P4.iFlt][outseis[4]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[4]] .+ P[2].Vpl, " ",
-                            (tau[outseis[4]] + P[3].tauo[outseis[4]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[4]]))), " "), "\n")
+        writedlm(fltst025, hcat(t, 
+                                 2*d[P4.iFlt][outseis[2]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[2]] + P[2].Vpl,
+                                 (tau[outseis[2]] + P[3].tauo[outseis[2]])/1e6, 
+                                 psi[outseis[2]]) )
 
-        write(fltst100, join(hcat(t, " ", 2*d[P4.iFlt][outseis[5]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[5]] .+ P[2].Vpl, " ",
-                            (tau[outseis[5]] + P[3].tauo[outseis[5]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[5]]))), " "), "\n")
+        writedlm(fltst050, hcat(t, 
+                                 2*d[P4.iFlt][outseis[3]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[3]] + P[2].Vpl,
+                                 (tau[outseis[3]] + P[3].tauo[outseis[3]])/1e6, 
+                                 psi[outseis[3]]) )
 
-        write(fltst125, join(hcat(t, " ", 2*d[P4.iFlt][outseis[6]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[6]] .+ P[2].Vpl, " ",
-                            (tau[outseis[6]] + P[3].tauo[outseis[6]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[6]]))), " "), "\n")
+        writedlm(fltst075, hcat(t, 
+                                 2*d[P4.iFlt][outseis[4]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[4]] + P[2].Vpl,
+                                 (tau[outseis[4]] + P[3].tauo[outseis[4]])/1e6, 
+                                 psi[outseis[4]]) )
 
-        write(fltst150, join(hcat(t, " ", 2*d[P4.iFlt][outseis[7]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[7]] .+ P[2].Vpl, " ",
-                            (tau[outseis[7]] + P[3].tauo[outseis[7]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[7]]))), " "), "\n")
+        writedlm(fltst100, hcat(t, 
+                                 2*d[P4.iFlt][outseis[5]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[5]] + P[2].Vpl,
+                                 (tau[outseis[5]] + P[3].tauo[outseis[5]])/1e6, 
+                                 psi[outseis[5]]) )
 
-        write(fltst175, join(hcat(t, " ", 2*d[P4.iFlt][outseis[8]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[8]] .+ P[2].Vpl, " ",
-                            (tau[outseis[8]] + P[3].tauo[outseis[8]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[8]]))), " "), "\n")
+        writedlm(fltst125, hcat(t, 
+                                 2*d[P4.iFlt][outseis[6]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[6]] + P[2].Vpl,
+                                 (tau[outseis[6]] + P[3].tauo[outseis[6]])/1e6, 
+                                 psi[outseis[6]]) )
 
-        write(fltst200, join(hcat(t, " ", 2*d[P4.iFlt][outseis[9]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[9]] .+ P[2].Vpl, " ",
-                            (tau[outseis[9]] + P[3].tauo[outseis[9]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[9]]))), " "), "\n")
+        writedlm(fltst150, hcat(t, 
+                                 2*d[P4.iFlt][outseis[7]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[7]] + P[2].Vpl,
+                                 (tau[outseis[7]] + P[3].tauo[outseis[7]])/1e6, 
+                                 psi[outseis[7]]) )
 
-        write(fltst250, join(hcat(t, " ", 2*d[P4.iFlt][outseis[10]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[10]] .+ P[2].Vpl, " ",
-                            (tau[outseis[10]] + P[3].tauo[outseis[10]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[10]]))), " "), "\n")
+        writedlm(fltst175, hcat(t, 
+                                 2*d[P4.iFlt][outseis[8]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[8]] + P[2].Vpl,
+                                 (tau[outseis[8]] + P[3].tauo[outseis[8]])/1e6, 
+                                 psi[outseis[8]]) )
 
-        write(fltst300, join(hcat(t, " ", 2*d[P4.iFlt][outseis[11]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[11]] .+ P[2].Vpl, " ",
-                            (tau[outseis[11]] + P[3].tauo[outseis[11]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[11]]))), " "), "\n")
+        writedlm(fltst200, hcat(t, 
+                                 2*d[P4.iFlt][outseis[9]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[9]] + P[2].Vpl,
+                                 (tau[outseis[9]] + P[3].tauo[outseis[9]])/1e6, 
+                                 psi[outseis[9]]) )
 
-        write(fltst350, join(hcat(t, " ", 2*d[P4.iFlt][outseis[12]] .+ P[2].Vpl*t, 
-                            " ", 2*v[P4.iFlt][outseis[12]] .+ P[2].Vpl, " ",
-                            (tau[outseis[12]] + P[3].tauo[outseis[12]])./1e6, " ", log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[12]]))), " "), "\n")
+        writedlm(fltst250, hcat(t, 
+                                 2*d[P4.iFlt][outseis[10]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[10]] + P[2].Vpl,
+                                 (tau[outseis[10]] + P[3].tauo[outseis[10]])/1e6, 
+                                 psi[outseis[10]]) )
+
+        writedlm(fltst300, hcat(t, 
+                                 2*d[P4.iFlt][outseis[11]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[11]] + P[2].Vpl,
+                                 (tau[outseis[11]] + P[3].tauo[outseis[11]])/1e6, 
+                                 psi[outseis[11]]) )
+
+        writedlm(fltst350, hcat(t, 
+                                 2*d[P4.iFlt][outseis[12]] + P[2].Vpl*t, 
+                                 2*v[P4.iFlt][outseis[12]] + P[2].Vpl,
+                                 (tau[outseis[12]] + P[3].tauo[outseis[12]])/1e6, 
+                                 psi[outseis[12]]) )
+        #  write(fltst000, join(hcat(t, 2*d[P4.iFlt][outseis[1]] .+ P[2].Vpl*t,
+                             #  2*v[P4.iFlt][outseis[1]] .+ P[2].Vpl,
+                            #  (tau[outseis[1]] + P[3].tauo[outseis[1]])./1e6, log10.((P3.xLf[1]/P3.Vo).*exp.(psi[outseis[1]])))), " ")
+
 
 
         # Write the data at all timesteps
